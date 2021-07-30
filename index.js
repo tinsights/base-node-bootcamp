@@ -21,7 +21,7 @@ function colourReader(error, content) {
       let colourValue = '#';
       let index = lines[i].indexOf('#') + 1;
       while (!Number.isNaN(parseInt(lines[i][index], 16))) {
-        colourValue = colourValue.concat(lines[i][index]);
+        colourValue += lines[i][index];
         index += 1;
       }
       if (output[colourValue]) {
