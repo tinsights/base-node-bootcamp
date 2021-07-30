@@ -1,4 +1,5 @@
 import { readFile } from 'fs';
+import colourReader from './functions.js';
 
 if (process.argv.length <= 2) {
   console.log('Usage: node index.js <filename>');
@@ -11,30 +12,3 @@ if (!filename.endsWith('.css')) {
 }
 
 readFile(filename, 'utf8', colourReader);
-
-function colourReader(error, content) {
-  if (error) throw error;
-  const output = {};
-  const lines = content.split('\n');
-  for (let i = 0; i < lines.length; i += 1) {
-    if (lines[i].includes('#')) {
-      let colourValue = '#';
-      let index = lines[i].indexOf('#') + 1;
-      while (!Number.isNaN(parseInt(lines[i][index], 16))) {
-        colourValue += lines[i][index];
-        index += 1;
-      }
-      if (output[colourValue]) {
-        output[colourValue] += 1;
-      }
-      else {
-        output[colourValue] = 1;
-      }
-    }
-  }
-  let i = 0;
-  while (Object.keys(output)[i]) {
-    console.log(`${[Object.keys(output)[i]]}: ${output[Object.keys(output)[i]]}`);
-    i += 1;
-  }
-}
