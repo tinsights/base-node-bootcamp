@@ -1,5 +1,4 @@
 import { readFile } from 'fs';
-import { start } from 'repl';
 
 if (process.argv.length <= 2) {
   console.log('Usage: node index.js <filename>');
@@ -19,13 +18,17 @@ function colourReader(error, content) {
   const lines = content.split('\n');
   for (let i = 0; i < lines.length; i += 1) {
     if (lines[i].includes('#')) {
-      const startIndex = lines[i].indexOf('#');
-      const colour = lines[i].substring(startIndex, lines[i].length - 1);
-      if (output[colour]) {
-        output[colour] += 1;
+      let colourValue = '#';
+      let index = lines[i].indexOf('#') + 1;
+      while (!Number.isNaN(parseInt(lines[i][index], 16))) {
+        colourValue = colourValue.concat(lines[i][index]);
+        index += 1;
+      }
+      if (output[colourValue]) {
+        output[colourValue] += 1;
       }
       else {
-        output[colour] = 1;
+        output[colourValue] = 1;
       }
     }
   }
