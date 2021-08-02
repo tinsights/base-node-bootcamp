@@ -1,33 +1,27 @@
-// createServer comes from the http module built-in to Node.
-import { createServer, get } from 'http';
+import { createServer } from 'http';
+import { readFile } from 'fs';
 
 const handleIncomingRequest = (request, response) => {
-  console.log('Received request!');
-  response.writeHead(200, {});
-  // response.end tells the server to send the completed response and mark
-  // this request-response interaction complete.
-  // https://nodejs.org/api/http.html#http_response_end_data_encoding_callback
-  response.end('Yay!', 'utf-8');
+  // request.url contains the portion of the URL after the domain.
+  // E.g. for https://ra.co/index.html, request.url would return "/index.html".
+  console.log('request url', request.url);
+
+  // "." refers to the Unix filesystem ".", which represents the current directory.
+  const filePath = `.${request.url}`;
+
+  readFile(filePath, (err, content) => {
+    if (err) {
+      console.error('error reading file', err);
+      return;
+    }
+    // Set the response code to 200 (i.e. OK)
+    response.writeHead(200);
+    // Send the response with the file content in utf-8 format
+    response.end(content, 'utf-8');
+  });
 };
 
-// createServer creates the server object. It accepts a request listener function.
-// The server calls the function every time it receives a request.
-// The listen method tells server to start listening for requests on given port.
-
+// Initialise server with request listener function handleIncomingRequest
+// https://nodejs.org/api/http.html#http_http_createserver_options_requestlistener
+// Use port 3004 by convention.
 createServer(handleIncomingRequest).listen(3004);
-
-const handleResponse = (response) => {
-  // Compile response data in a data variable.
-  // The response may contain multiple "chunks" of data.
-  let data = '';
-
-  // Add chunk of data to data var when each "chunk" is received.
-  response.on('data', (chunk) => {
-    data += chunk;
-  });
-
-  // We have received the whole response. Print the full response data.
-  response.on('end', () => {
-    console.log('Response Data: ', data);
-  });
-};
