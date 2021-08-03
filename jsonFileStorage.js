@@ -73,7 +73,7 @@ export function edit(filename, readCallback, writeCallback) {
     // Perform custom edit operations here.
     // jsonContentObj mutated in-place because object is mutable data type.
     readCallback(null, jsonContentObj);
-
+    console.log(jsonContentObj);
     // Write updated content to target file.
     write(filename, jsonContentObj, writeCallback);
   });

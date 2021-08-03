@@ -1,5 +1,7 @@
 import { readFile, writeFile } from 'fs';
-import { write, read, add } from './jsonFileStorage.js';
+import {
+  write, read, add, edit,
+} from './jsonFileStorage.js';
 import { deck } from './deck.js';
 
 if (process.argv.length !== 3) {
@@ -14,24 +16,31 @@ switch (operation.toLowerCase()) {
       hand: [],
       deck,
     };
-    write('deck.json', gameObj);
+    write('deck.json', gameObj, (err, jsonContentObj) => {
+      console.log('success!'); });
     break;
   case ('read'):
-    add('deck.json', shuffle);
+    read('deck.json', (err, jsonContentObj) => {
+      console.log(jsonContentObj); });
     break;
   case ('shuffle'):
-    shuffle('deck.json');
+    edit('deck.json', shuffle, () => {});
     break;
   case ('deal'):
-    deal('deck.json');
+    edit('deck.json', deal, () => {});
     break;
   default:
     console.error('Unknown operation');
     process.exit(1);
 }
 
-function shuffle(array) {
-  let max = array.length; let toSwap;
+function shuffle(err, jsonObj) {
+  if (err) {
+    console.trace('ERROR');
+  }
+  const { deck } = jsonObj;
+  console.log(deck);
+  let max = deck.length; let toSwap;
   let index;
 
   // While there remain elements to shuffle…
@@ -40,10 +49,19 @@ function shuffle(array) {
     index = Math.floor(Math.random() * max--);
 
     // And swap it with the current element.
-    toSwap = array[max];
-    array[max] = array[index];
-    array[index] = toSwap;
+    toSwap = deck[max];
+    deck[max] = deck[index];
+    deck[index] = toSwap;
   }
 
-  return array;
+  jsonObj.deck = deck;
+}
+
+function deal(err, jsonObj) {
+  const { deck } = jsonObj;
+  const { hand } = jsonObj;
+  hand.push(deck.pop(), deck.pop());
+
+  jsonObj.deck = deck;
+  jsonObj.hand = hand;
 }
