@@ -8,47 +8,6 @@ if (process.argv.length !== 3) {
 
 const [, , operation] = process.argv;
 
-const modifyJsonFile = (filename) => {
-  // Read original data from file
-  readFile(filename, 'utf-8', (readErr, jsonContentStr) => {
-    if (readErr) {
-      console.log('Reading error', readErr);
-    }
-
-    // Convert data from string to Object
-    const jsonContentObj = JSON.parse(jsonContentStr);
-    // access array in "deck" key
-    // shuffle that array
-    const shuffledDeck = shuffle(jsonContentObj.deck);
-
-    // overwriting "deck" value
-    add('deck.json', 'deck', shuffledDeck);
-  });
-};
-
-const deal = (filename) => {
-  // Read original data from file
-  readFile(filename, 'utf-8', (readErr, jsonContentStr) => {
-    if (readErr) {
-      console.log('Reading error', readErr);
-    }
-
-    // Convert data from string to Object
-    const jsonContentObj = JSON.parse(jsonContentStr);
-    // access array in "deck" key
-    // shuffle that array
-    const { hand } = jsonContentObj;
-    const { deck } = jsonContentObj;
-    hand.push(...deck.splice(0, 2));
-    const newObj = {
-      hand,
-      deck,
-    };
-    // overwriting "deck" value
-    write('deck.json', newObj);
-  });
-};
-
 switch (operation.toLowerCase()) {
   case ('create'):
     const gameObj = {
@@ -58,10 +17,10 @@ switch (operation.toLowerCase()) {
     write('deck.json', gameObj);
     break;
   case ('read'):
-    read('deck.json');
+    add('deck.json', shuffle);
     break;
   case ('shuffle'):
-    modifyJsonFile('deck.json');
+    shuffle('deck.json');
     break;
   case ('deal'):
     deal('deck.json');
