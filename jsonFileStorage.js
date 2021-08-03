@@ -1,8 +1,9 @@
 import { readFile, writeFile } from 'fs';
 
 /**
- * Read and log the contents of the target JSON file
+ * Overwrite contents of the target JSON file
  * @param {string} filename - The name of the target JSON file
+ * @param {object} content - The content to write to the file.
  * @returns undefined
  */
 export function write(filename, jsonContentObj) {
