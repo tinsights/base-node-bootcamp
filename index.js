@@ -16,33 +16,55 @@ const modifyJsonFile = (filename) => {
     }
 
     // Convert data from string to Object
-    let jsonContentObj = JSON.parse(jsonContentStr);
+    const jsonContentObj = JSON.parse(jsonContentStr);
+    // access array in "deck" key
+    // shuffle that array
+    const shuffledDeck = shuffle(jsonContentObj.deck);
 
-    // TODO: Modify the data however we would like
-    jsonContentObj = shuffle(jsonContentObj);
+    // overwriting "deck" value
+    add('deck.json', 'deck', shuffledDeck);
+  });
+};
 
-    // Convert data from Object to string
-    const updatedJsonContentStr = JSON.stringify(jsonContentObj);
+const deal = (filename) => {
+  // Read original data from file
+  readFile(filename, 'utf-8', (readErr, jsonContentStr) => {
+    if (readErr) {
+      console.log('Reading error', readErr);
+    }
 
-    // Write updated data to file
-    writeFile(filename, updatedJsonContentStr, (writeErr) => {
-      if (writeErr) {
-        console.log('writing error', writeErr);
-      }
-    });
+    // Convert data from string to Object
+    const jsonContentObj = JSON.parse(jsonContentStr);
+    // access array in "deck" key
+    // shuffle that array
+    const { hand } = jsonContentObj;
+    const { deck } = jsonContentObj;
+    hand.push(...deck.splice(0, 2));
+    const newObj = {
+      hand,
+      deck,
+    };
+    // overwriting "deck" value
+    write('deck.json', newObj);
   });
 };
 
 switch (operation.toLowerCase()) {
   case ('create'):
-    write('deck.json', deck);
+    const gameObj = {
+      hand: [],
+      deck,
+    };
+    write('deck.json', gameObj);
     break;
   case ('read'):
     read('deck.json');
     break;
   case ('shuffle'):
     modifyJsonFile('deck.json');
-    console.log(operation);
+    break;
+  case ('deal'):
+    deal('deck.json');
     break;
   default:
     console.error('Unknown operation');
@@ -50,17 +72,17 @@ switch (operation.toLowerCase()) {
 }
 
 function shuffle(array) {
-  let m = array.length; let toSwap; let
-    index;
+  let max = array.length; let toSwap;
+  let index;
 
   // While there remain elements to shuffle…
-  while (m) {
+  while (max) {
     // Pick a remaining element…
-    index = Math.floor(Math.random() * m--);
+    index = Math.floor(Math.random() * max--);
 
     // And swap it with the current element.
-    toSwap = array[m];
-    array[m] = array[index];
+    toSwap = array[max];
+    array[max] = array[index];
     array[index] = toSwap;
   }
 
