@@ -2,10 +2,11 @@ import { readFile, writeFile } from 'fs';
 import { write, read, add } from './jsonFileStorage.js';
 import { deck } from './deck.js';
 
+// check for sufficient CLI arguments
 if (process.argv.length !== 3) {
   console.error('Usage: node index.js [create|read]');
 }
-
+// extract arguments
 const [, , operation] = process.argv;
 
 const modifyJsonFile = (filename) => {
@@ -35,35 +36,38 @@ const deal = (filename) => {
 
     // Convert data from string to Object
     const jsonContentObj = JSON.parse(jsonContentStr);
-    // access array in "deck" key
-    // shuffle that array
+    // access deck and hand arrays
     const { hand } = jsonContentObj;
     const { deck } = jsonContentObj;
+    // deal two cards from deck to hand
     hand.push(...deck.splice(0, 2));
+    // create new object to write back into deck.json
     const newObj = {
       hand,
       deck,
     };
-    // overwriting "deck" value
+    // overwrite entire file
     write('deck.json', newObj);
   });
 };
 
-switch (operation.toLowerCase()) {
-  case ('create'):
+// run different functions based on user input
+switch (operation.toUpperCase()) {
+  case ('CREATE'): {
     const gameObj = {
       hand: [],
       deck,
     };
     write('deck.json', gameObj);
     break;
-  case ('read'):
+  }
+  case ('READ'):
     read('deck.json');
     break;
-  case ('shuffle'):
+  case ('SHUFFLE'):
     modifyJsonFile('deck.json');
     break;
-  case ('deal'):
+  case ('DEAL'):
     deal('deck.json');
     break;
   default:
